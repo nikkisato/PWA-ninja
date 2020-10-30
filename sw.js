@@ -16,6 +16,17 @@ const assets = [
 const dynamicCacheName = 'site-dynamic-v1';
 const staticCacheName = 'site-static-v2';
 
+//cache size limit function
+const limitCacheSize = (name, size) => {
+  caches.open(name).then((cache) => {
+    caches.keys().then((keys) => {
+      if (keys.length > size) {
+        cache.delete(keys[0]).then(limitCacheSize(name, size));
+      }
+    });
+  });
+};
+
 //Installing ServiceWorker
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -49,13 +60,15 @@ self.addEventListener('fetch', (event) => {
           fetch(event.request).then((fetchRes) => {
             return caches.open(dynamicCacheName).then((cache) => {
               caches.put(event.request.url, fetchRes.clone());
+              limitCacheSize(dynamicCacheName, 15);
               return fetchRes;
             });
           })
         );
       })
       .catch((err) => {
-        caches.match('/pages/fallback.html');
+        if (event.request.url.indexOf('.html') > -1)
+          return caches.match('/pages/fallback.html');
       })
   );
 });
