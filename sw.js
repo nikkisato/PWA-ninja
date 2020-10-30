@@ -13,7 +13,7 @@ const assets = [
   'https://fonts.gstatic.com/s/materialicons/v55/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2',
 ];
 
-const staticCacheName = 'site-static';
+const staticCacheName = 'site-static-v1';
 
 //Installing ServiceWorker
 self.addEventListener('install', (event) => {
@@ -25,7 +25,17 @@ self.addEventListener('install', (event) => {
 });
 
 //Activating ServiceWorker
-self.addEventListener('activate', (event) => {});
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys
+          .filter((key) => key !== staticCacheName)
+          .map((key) => caches.delete())
+      );
+    })
+  );
+});
 
 //Fetching ServiceWorker
 self.addEventListener('fetch', (event) => {
