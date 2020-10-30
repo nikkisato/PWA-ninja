@@ -14,3 +14,8 @@ if ('serviceWorker' in navigator) {
 self.addEventListener('install', (event) => {
   console.log('[SERVICE WORKER] HAS BEEN INSTALLED', event);
 });
+
+//Activating ServiceWorker
+self.addEventListener('activate', (event) => {
+  console.log('[SERVICE WORKER] HAS BEEN ACTIVATED', event);
+});
