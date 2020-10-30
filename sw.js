@@ -3,6 +3,7 @@ const assets = [
   '/index.html',
   '/pages/about.html',
   '/pages/contact.html',
+  '/pages/fallback.html',
   '/css/materialize.min.css',
   '/css/style.css',
   '/src/js/app.js',
@@ -12,8 +13,8 @@ const assets = [
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://fonts.gstatic.com/s/materialicons/v55/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2',
 ];
-
-const staticCacheName = 'site-static-v1';
+const dynamicCacheName = 'site-dynamic-v1';
+const staticCacheName = 'site-static-v2';
 
 //Installing ServiceWorker
 self.addEventListener('install', (event) => {
@@ -30,7 +31,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys
-          .filter((key) => key !== staticCacheName)
+          .filter((key) => key !== staticCacheName && key !== dynamicCacheName)
           .map((key) => caches.delete())
       );
     })
@@ -40,8 +41,21 @@ self.addEventListener('activate', (event) => {
 //Fetching ServiceWorker
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cacheRes) => {
-      return cacheRes || fetch(event.request);
-    })
+    caches
+      .match(event.request)
+      .then((cacheRes) => {
+        return (
+          cacheRes ||
+          fetch(event.request).then((fetchRes) => {
+            return caches.open(dynamicCacheName).then((cache) => {
+              caches.put(event.request.url, fetchRes.clone());
+              return fetchRes;
+            });
+          })
+        );
+      })
+      .catch((err) => {
+        caches.match('/pages/fallback.html');
+      })
   );
 });
