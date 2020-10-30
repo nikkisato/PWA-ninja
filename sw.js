@@ -1,14 +1,28 @@
+const assets = [
+  '/',
+  '/index.html',
+  '/pages/about.html',
+  '/pages/contact.html',
+  '/css/materialize.min.css',
+  '/css/style.css',
+  '/src/js/app.js',
+  '/src/materialize.min.js',
+  '/src/js/ui.js',
+  '/img/dish.png',
+  'https://fonts.googleapis.com/icon?family=Material+Icons',
+];
+
+const staticCacheName = 'site-static';
+
 //Installing ServiceWorker
 self.addEventListener('install', (event) => {
-  console.log('[SERVICE WORKER] HAS BEEN INSTALLED', event);
+  caches.open(staticCacheName).then((cache) => {
+    cache.addAll(assets);
+  });
 });
 
 //Activating ServiceWorker
-self.addEventListener('activate', (event) => {
-  console.log('[SERVICE WORKER] HAS BEEN ACTIVATED', event);
-});
+self.addEventListener('activate', (event) => {});
 
 //Fetching ServiceWorker
-self.addEventListener('fetch', (event) => {
-  console.log('[SERVICE WORKER] CURRENTLY FETCHING', event);
-});
+self.addEventListener('fetch', (event) => {});
