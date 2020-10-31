@@ -13,8 +13,8 @@ const assets = [
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://fonts.gstatic.com/s/materialicons/v55/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2',
 ];
-const dynamicCacheName = 'site-dynamic-v1';
-const staticCacheName = 'site-static-v3';
+const dynamicCacheName = 'site-dynamic-v2';
+const staticCacheName = 'site-static-v5';
 
 //cache size limit function
 const limitCacheSize = (name, size) => {
@@ -43,7 +43,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys
           .filter((key) => key !== staticCacheName && key !== dynamicCacheName)
-          .map((key) => caches.delete())
+          .map((key) => cache.delete())
       );
     })
   );
